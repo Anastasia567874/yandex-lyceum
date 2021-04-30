@@ -1,0 +1,180 @@
+import datetime as datetime
+import docx
+import xlsxwriter
+
+
+class Hall:
+    def __init__(self, row_count, chair_count):
+        self.row_count = row_count
+        self.chair_count = chair_count
+
+
+class Ticket:
+    def __init__(self, show, price, row_num, chair_num):
+        self.show = show
+        self.row_num = row_num
+        self.chair_num = chair_num
+        self.price = price
+
+    def __str__(self):
+        return f"{self.show.movie.name} {self.show.time} " + \
+               f"Ряд {self.row_num}, Место {self.chair_num}"
+
+
+class Cinema:
+    def __init__(self, name, list_halls=[]):
+        self.name = name
+        self.list_halls = list_halls
+        self.list_shows = []
+
+    def add_hall(self, row_count, chair_count):
+        new_hall = Hall(row_count, chair_count)
+        self.list_halls.append(new_hall)
+        return new_hall
+
+    def add_show(self, hall, time, movie):
+        new_show = Show(hall, time, movie)
+        self.list_shows.append(new_show)
+        return new_show
+
+    def del_hall(self, name):
+        del self.list_halls[self.list_halls.index(name)]
+
+    def del_show(self, name):
+        del self.list_shows[self.list_shows.index(name)]
+
+    def get_three_chairs_show(self, time):
+        min_time = datetime.timedelta.max
+        nearest_show = None
+        for i in self.list_shows:
+            for j in range(i.hall.row_count):
+                k = 0
+                for s in i.chairs[j]:
+                    if k == 3:
+                        time_before = i.time - time
+                        if time_before < min_time:
+                            min_time = time_before
+                            nearest_show = i
+                            break
+                    if s == 0:
+                        k += 1
+                    else:
+                        k = 0
+        return nearest_show
+
+    def comparison_of_tickets_sold_for_different_movies(self):
+        w = xlsxwriter.Workbook(f'res{self.name}.xlsx')
+        s = w.add_worksheet()
+        c = w.add_chart({'type': 'pie'})
+        d1 = []
+        d2 = []
+        for i in self.list_shows:
+            x, y = i.movie.name, len(i.tickets)
+            d1.append(x)
+            d2.append(int(y))
+        n = len(d2)
+        s.write_column('A1', d1)
+        s.write_column('B1', d2)
+        c.add_series({
+            'categories': '=Sheet1!$A$1:$A$' + str(n),
+            'values': '=Sheet1!$B$1:$B$' + str(n),
+        })
+        s.insert_chart('C3', c)
+        w.close()
+
+    def __str__(self):
+        return self.name
+
+
+class Show:
+    def __init__(self, hall, time, movie):
+        self.hall = hall
+        self.time = time
+        self.movie = movie
+        self.chairs = [[0] * hall.chair_count for _ in range(hall.row_count)]
+        self.free_count = hall.chair_count * hall.row_count
+        self.tickets = []
+
+    def print_hall(self):
+        for i in range(self.hall.row_count):
+            print(*self.chairs[i])
+
+    def sell_ticket(self, row_num, chair_num, price):
+        if self.chairs[row_num][chair_num]:
+            return None
+        new_ticket = Ticket(self, price, row_num, chair_num)
+        self.tickets.append(new_ticket)
+        self.chairs[row_num][chair_num] = 1
+        self.free_count -= 1
+        return new_ticket
+
+    def __str__(self):
+        return self.movie.name
+
+    def booklet_for_movie(self, file_name=None):
+        doc = docx.Document()
+        doc.add_heading(f'Фильм в прокате: {self.movie.name}')
+        doc.add_paragraph(f'Время просмотра: {self.time}')
+        doc.add_paragraph(f'Дополнительная информация о фильме: {self.movie.info}')
+        if file_name:
+            doc.add_picture(f'./{file_name}')
+        else:
+            doc.add_paragraph('Постер не найден')
+        doc.save(f'poster{self.movie.name}.docx')
+
+
+class Movie:
+    def __init__(self, net, name, time, info=[]):
+        self.name = name
+        self.time = time
+        self.net = net
+        self.info = info
+
+    def get_nearest_show(self, time):
+        min_time = datetime.timedelta.max
+        nearest_show = None
+        for c in self.net.cinemas.values():
+            for s in c.list_shows:
+                if s.movie == self and s.free_count > 0:
+                    time_before = s.time - time
+                    if time_before < min_time:
+                        min_time = time_before
+                        nearest_show = s
+        return nearest_show
+
+    def __str__(self):
+        return self.name
+
+
+class Net:
+    def __init__(self):
+        self.cinemas = {}
+        self.movies = {}
+
+    def add_movie(self, name, time, info):
+        new_movie = Movie(self, name, time, info)
+        self.movies[name] = new_movie
+        return new_movie
+
+    def add_cinema(self, cinema):
+        self.cinemas[cinema.name] = cinema
+
+    def del_movie(self, name):
+        del self.movies[name]
+
+    def del_cinema(self, name):
+        del self.cinemas[name]
+
+# c1 = Cinema("Kosmos")
+# h1 = c1.add_hall(10, 10)
+# my = Net()
+# my.add_cinema(c1)
+# film1 = my.add_movie("Terminator", 120, "старый фильм")
+# s1 = c1.add_show(h1, datetime.datetime(2020, 9, 19, 18, 50), film1)
+# my_ticket = s1.sell_ticket(1, 5, 100)
+# print(my_ticket)
+# s = film1.get_nearest_show(datetime.datetime.now())
+# print(s.chairs)
+# print(c1.get_three_chairs_show(datetime.datetime(2020, 10, 19, 18, 50)))
+# s1.booklet_for_movie("terminator.jpeg")
+# c1.comparison_of_tickets_sold_for_different_movies()

@@ -1,0 +1,22 @@
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--per-day', nargs=1, type=float, default=[0], dest='PER_DAY')
+parser.add_argument('--per-week', nargs=1, type=float, default=[0], dest='PER_WEEK')
+parser.add_argument('--per-month', nargs=1, type=float, default=[0], dest='PER_MONTH')
+parser.add_argument('--per-year', nargs=1, type=float, default=[0], dest='PER_YEAR')
+parser.add_argument('--get-by', nargs=1, type=str, default=['day'],
+                    choices=['day', 'month', 'year'], dest='by')
+arg = parser.parse_args()
+day = arg.PER_DAY[0]
+week = arg.PER_WEEK[0] / 7
+month = arg.PER_MONTH[0] / 30
+year = arg.PER_YEAR[0] / 360
+by = arg.by[0]
+k = day + week + month + year
+if by == 'month':
+    k *= 30
+elif by == 'year':
+    k *= 360
+print(int(k))

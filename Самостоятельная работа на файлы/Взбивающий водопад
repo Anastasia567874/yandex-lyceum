@@ -1,0 +1,25 @@
+class SameValuesError(Exception):
+    pass
+
+
+class OneDigitError(Exception):
+    pass
+
+
+def whipping_waterfall(*sete, shift=0):
+    chisla = []
+    if not sete:
+        raise ValueError('Empty input data')
+    for x, y in sete:
+        if x == y:
+            raise SameValuesError('Same numbers in tuple')
+        if len(str(x)) == 1 and len(str(y)) == 1:
+            raise OneDigitError('Too small value')
+        r = list(str(max(x, y) - min(x, y)))
+        for i in range(len(r)):
+            if int(r[i]) % 2 == 0:
+                r[i] = str(int(r[i]) + 1)
+        k = shift % len(r)
+        r = r[k:] + r[:k]
+        chisla.append(int(''.join(r)))
+    return chisla

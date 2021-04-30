@@ -1,0 +1,115 @@
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.setEnabled(True)
+        MainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox.setGeometry(QtCore.QRect(60, 60, 191, 41))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox_2 = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox_2.setGeometry(QtCore.QRect(280, 60, 201, 41))
+        self.comboBox_2.setObjectName("comboBox_2")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(520, 60, 221, 41))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton.setFont(font)
+        self.pushButton.setObjectName("pushButton")
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(50, 140, 651, 361))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.pushButton.setText(_translate("MainWindow", "Узнать результаты"))
+
+
+import csv
+import sys
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+from PyQt5.QtGui import QColor
+
+
+class MyWidget(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.name = 'rez.csv'
+        self.item()
+        self.loadTable()
+        self.pushButton.clicked.connect(self.loadTable)
+
+    def item(self):
+        with open(self.name, encoding="utf8") as csvfile:
+            reader = list(csv.reader(csvfile,
+                                delimiter=',', quotechar='"'))[1:]
+            sete1 = sorted(set([i[2].split('-')[-3] for i in reader]), key=lambda x: int(x))
+            sete2 = sorted(set([i[2].split('-')[-2] for i in reader]), key=lambda x: int(x))
+            self.comboBox_2.addItem('Все')
+            self.comboBox.addItem('Все')
+            for i in sete1:
+                self.comboBox.addItem(i)
+            for i in sete2:
+                self.comboBox_2.addItem(i)
+
+    def loadTable(self):
+        with open(self.name, encoding="utf8") as csvfile:
+            reader = csv.reader(csvfile,
+                                delimiter=',', quotechar='"')
+            next(reader)
+            title = ['Фамилия', 'Результат', 'Логин']
+            sete = list(reader)
+            sete.sort(key=lambda x: (int(x[-1]), x[1].split()[-2]), reverse=True)
+            self.tableWidget.setColumnCount(len(title))
+            self.tableWidget.setHorizontalHeaderLabels(title)
+            self.tableWidget.setRowCount(0)
+            n1, n2 = self.comboBox.currentText(), self.comboBox_2.currentText()
+            k = 0
+            s, m = -1, -1
+            color = [(52, 201, 36), (0, 191, 255), (147, 112, 219), (218, 165, 32), (119, 136, 153)]
+            for row in sete:
+                if (n1 == 'Все' or row[2].split('-')[-3] == n1) and (n2 == 'Все' or row[2].split('-')[-2] == n2):
+                    self.tableWidget.setRowCount(self.tableWidget.rowCount() + 1)
+                    self.tableWidget.setItem(k, 0, QTableWidgetItem(str(row[1].split()[-2])))
+                    self.tableWidget.setItem(k, 1, QTableWidgetItem(row[-1]))
+                    self.tableWidget.setItem(k, 2, QTableWidgetItem(row[2]))
+                    if m == -1 or m > int(row[-1]):
+                        s += 1
+                        m = int(row[-1])
+                    if s < 5:
+                        self.color_row(k, QColor(*color[s]))
+                    k += 1
+        self.tableWidget.resizeColumnsToContents()
+
+    def color_row(self, row, color):
+        for i in range(self.tableWidget.columnCount()):
+            self.tableWidget.item(row, i).setBackground(color)
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = MyWidget()
+    ex.show()
+    sys.exit(app.exec())

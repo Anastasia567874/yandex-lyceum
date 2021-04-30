@@ -1,0 +1,14 @@
+import requests
+
+
+def creatures_accounting(host, port, **kwargs):
+    data = requests.get(f'http://{host}:{port}').json()
+    pr = True
+    s2 = kwargs.keys()
+    for i in data:
+        s1 = i.keys()
+        if s1 == s2:
+            pr = False
+    if pr:
+        data.append(kwargs)
+    return data

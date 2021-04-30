@@ -1,0 +1,20 @@
+import sys
+data = list(map(str.strip, sys.stdin))
+k = 1
+sete = {}
+for i in data:
+    if k == 1:
+        k = 0
+    elif i == '':
+        k = 1
+    else:
+        i = i.split()
+        sete[i[-1]] = sete.get(i[-1], []) + [' '.join(i[:-1])]
+x = ''
+for i in sorted(sete.keys(), key=lambda j: int(j)):
+    qw = []
+    for j in sete[i]:
+        if j not in qw:
+            qw.append(j)
+    x += f'{i}: {", ".join(qw)}\n'
+print(x)

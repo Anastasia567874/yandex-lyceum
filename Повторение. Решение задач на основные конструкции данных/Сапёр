@@ -1,0 +1,99 @@
+from random import randrange
+
+
+def proverka(hod):
+    while ' '.join(hod[:-2]) != 'открой клетку' and ' '.join(hod[:-2]) != 'поставь флажок на клетку':
+        print('Такой команды не существует. Введите команду еще раз')
+        hod = input().split()
+    hod[-2] = int(hod[-2])
+    hod[-1] = int(hod[-1])
+    while hod[-2] < 0 or hod[-2] > 4 or hod[-1] < 0 or hod[-1] > 4:
+        print('Координаты ячейки выходят за границу. Введите команду еще раз')
+        hod = input().split()
+        hod[-2] = int(hod[-2])
+        hod[-1] = int(hod[-1])
+    return hod
+
+
+def okno():
+    global pole
+    for i in range(5):
+        for j in range(5):
+            if pole[i][j][1] == 'op':
+                print(pole[i][j][0], end='\t')
+            elif pole[i][j][1] == 'f':
+                print('f', end='\t')
+            else:
+                print('()', end='\t')
+        print()
+
+
+def pobeda(hod):
+    global pole
+    if 'поставь' in hod:
+        if pole[hod[-2]][hod[-1]][1] == 'op':
+            print('Клетка уже открыта')
+            return True
+        pole[hod[-2]][hod[-1]][1] = 'f'
+        return True
+    if pole[hod[-2]][hod[-1]][1] != 'm':
+        open(hod[-2], hod[-1])
+        for i in range(5):
+            for j in range(5):
+                if pole[i][j][1] == 'cl':
+                    return True
+        print('Вы выиграли')
+        okno()
+        return False
+    print('Вы проиграли')
+    return False
+
+
+def open(x, y):
+    global pole
+    if pole[x][y][1] != 'op':
+        pole[x][y][1] = 'op'
+        if pole[x][y][0] == 0:
+            if x - 1 >= 0 and pole[x - 1][y][1] != 'm':
+                open(x - 1, y)
+            if x + 1 < 5 and pole[x + 1][y][1] != 'm':
+                open(x + 1, y)
+            if y - 1 >= 0 and pole[x][y - 1][1] != 'm':
+                open(x, y - 1)
+            if y + 1 < 5 and pole[x][y + 1][1] != 'm':
+                open(x, y + 1)
+
+
+print('''Игра начинается
+Правила:
+1) Чтобы открыть клетку введите: 'открой клетку {x} {y}'
+При выборе клетки, среди соседей которой нет мин, открываются также все соседние с ней клетки.
+Если и среди соседей есть «нулевые» клетки, процесс продолжается рекурсивно.
+За соседа считаются верхняя, нижняя клетки, а также клетки справа и слева
+В открывшихся клетках будет показано число соседних мин
+2) Можно поставить на клетку флажок, не позволяющий открыть ячейку, не сняв с нее значок
+Чтобы поставить флажок введите: 'поставь флажок на клетку {x} {y}'
+3) Невозможно подорваться на мине первым ходом
+4) Игра закончится, когда вы выиграете или подорветесь на мине.
+Чтобы выиграть, нужно открыть все клетки без мин
+5) Первый ход - открытие клетки
+''')
+hod = proverka(input().split())
+pole = [[[0, 'cl'] for i in range(5)] for i in range(5)]
+sete = [[randrange(0, 5), randrange(0, 5)] for i in range(4)]  # координаты мин
+for x, y in sete:
+    if not (x == hod[-2] and y == hod[-1]):
+        pole[x][y][1] = 'm'  # вставляем в ячейку xy мину
+for x in range(5):
+    for y in range(5):  # вычисляем количество соседей-мин для каждой ячейки
+        if x - 1 >= 0 and pole[x - 1][y][1] == 'm':
+            pole[x][y][0] += 1
+        if x + 1 < 5 and pole[x + 1][y][1] == 'm':
+            pole[x][y][0] += 1
+        if y - 1 >= 0 and pole[x][y - 1][1] == 'm':
+            pole[x][y][0] += 1
+        if y + 1 < 5 and pole[x][y + 1][1] == 'm':
+            pole[x][y][0] += 1
+while pobeda(hod):
+    okno()
+    hod = proverka(input().split())

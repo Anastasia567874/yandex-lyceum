@@ -1,0 +1,37 @@
+import pygame
+
+
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_caption('Zoom')
+    size = width, height = 501, 501
+    screen = pygame.display.set_mode(size)
+
+    f = open("points.txt", mode='rt', encoding='utf8').readline()
+    list_of_points = []
+    for i in f.split(', '):
+        points = [float(j.replace(',', '.')) for j in i[1:-1].split(';')]
+        list_of_points.append(points)
+
+    running = True
+    scale = 1
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:
+                    scale += 1
+                elif event.button == 5 and scale > 1:
+                    scale -= 1
+        screen.fill(pygame.Color('black'))
+        x, y = list_of_points[0]
+        for ind in range(1, len(list_of_points)):
+            x1, y1 = list_of_points[ind]
+            x = width // 2 + x * scale
+            y = height // 2 - y * scale
+            x1 = width // 2 + x1 * scale
+            y1 = height // 2 - y1 * scale
+            pygame.draw.line(screen, pygame.Color('white'), (x, y), (x1, y1), 5)
+            x, y = list_of_points[ind]
+        pygame.display.flip()

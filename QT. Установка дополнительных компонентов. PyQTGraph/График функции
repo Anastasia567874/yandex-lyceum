@@ -1,0 +1,79 @@
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(778, 546)
+        self.graphicsView = PlotWidget(Form)
+        self.graphicsView.setGeometry(QtCore.QRect(50, 30, 671, 371))
+        self.graphicsView.setObjectName("graphicsView")
+        self.label = QtWidgets.QLabel(Form)
+        self.label.setGeometry(QtCore.QRect(30, 440, 381, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.lineEdit = QtWidgets.QLineEdit(Form)
+        self.lineEdit.setGeometry(QtCore.QRect(420, 440, 181, 31))
+        self.lineEdit.setObjectName("lineEdit")
+        self.label_2 = QtWidgets.QLabel(Form)
+        self.label_2.setGeometry(QtCore.QRect(30, 490, 511, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+        self.lineEdit_2 = QtWidgets.QLineEdit(Form)
+        self.lineEdit_2.setGeometry(QtCore.QRect(550, 490, 171, 31))
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.pushButton = QtWidgets.QPushButton(Form)
+        self.pushButton.setGeometry(QtCore.QRect(630, 430, 131, 51))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton.setFont(font)
+        self.pushButton.setObjectName("pushButton")
+
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.label.setText(_translate("Form", "Введите функцию. Например: y=5*x-3"))
+        self.label_2.setText(_translate("Form", "Задайте диапазон через пробел. Например: -10 10"))
+        self.pushButton.setText(_translate("Form", "Построить"))
+
+
+from pyqtgraph import PlotWidget
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow
+
+
+class MyWidget(QMainWindow, Ui_Form):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.do_paint = False
+        self.pushButton.clicked.connect(self.run)
+
+    def run(self):
+        self.func = self.lineEdit.text()[2:]
+        i, j = [int(i) for i in self.lineEdit_2.text().split()]
+        self.diap = range(i, j)
+        if True:
+            self.graphicsView.clear()
+            self.graphicsView.plot([i for i in self.diap], [eval(self.func) for x in self.diap], pen='r')
+
+
+def except_hook(cls, exception, traceback):
+    sys.__excepthook__(cls, exception, traceback)
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    form = MyWidget()
+    form.show()
+    sys.excepthook = except_hook
+    sys.exit(app.exec())

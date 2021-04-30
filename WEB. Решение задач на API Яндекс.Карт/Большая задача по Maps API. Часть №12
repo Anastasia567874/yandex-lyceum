@@ -1,0 +1,190 @@
+import os
+import sys
+from PyQt5 import uic
+import requests
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMainWindow
+from PyQt5.QtCore import Qt
+
+SCREEN_SIZE = [600, 450]
+
+
+class Example(QMainWindow, QWidget):
+    def __init__(self):
+        super().__init__()
+        self.coords = [37.616406, 55.765031]
+        self.point = [37.616406, 55.765031]
+        self.pt = [312, 302]
+        self.spn = 0.002
+        self.view = 'map'
+        self.getImage()
+        self.index = False
+        uic.loadUi('map.ui', self)
+        self.lineEdit.setText('Россия, Москва, улица Петровка, 38')
+        self.paintMap()
+        self.buttonGroup.buttonClicked.connect(self.change_view)
+        self.pushButton.clicked.connect(self.search_for_an_object)
+        self.pushButton_2.clicked.connect(self.reset)
+        self.checkBox.clicked.connect(self.b_ch)
+
+    def b_ch(self):
+        self.index = not self.index
+        self.lineEdit_2.setText(self.returne_coords()[1])
+
+    def reset(self):
+        self.point = []
+        self.paintMap()
+
+    def returne_coords(self):
+        toponym_to_find = self.lineEdit.text()
+        geocoder_request = f"http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode={toponym_to_find}&format=json"
+        response = requests.get(geocoder_request)
+        if response:
+            json_response = response.json()
+            toponym = json_response["response"]["GeoObjectCollection"][
+                "featureMember"][0]["GeoObject"]
+            text = toponym['metaDataProperty']['GeocoderMetaData']['text']
+            if self.index:
+                try:
+                    ind = toponym['metaDataProperty']['GeocoderMetaData']['Address']['postal_code']
+                    text = text + ', ' + ind
+                except Exception:
+                    pass
+            return [float(i) for i in toponym["Point"]["pos"].split(' ')], text
+
+    def search_for_an_object(self):
+        self.coords = self.returne_coords()[0]
+        self.point = self.coords.copy()
+        self.pt = [312, 302]
+        self.paintMap()
+
+    def returne_adress(self, toponym_to_find):
+        geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+        geocoder_params = {
+            "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+            "geocode": toponym_to_find,
+            "format": "json"
+        }
+        response = requests.get(geocoder_api_server, params=geocoder_params)
+        if not response:
+            sys.exit(1)
+        json_response = response.json()
+        toponym = json_response["response"]["GeoObjectCollection"][
+            "featureMember"][0]["GeoObject"]["metaDataProperty"]['GeocoderMetaData']['Address']['formatted']
+        return toponym
+
+    def change_view(self):
+        if self.radioButton.isChecked():
+            self.view = 'map'
+            self.paintMap()
+        elif self.radioButton_2.isChecked():
+            self.view = 'sat'
+            self.paintMap()
+        elif self.radioButton_3.isChecked():
+            self.view = 'sat,skl'
+            self.paintMap()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_PageUp and 65.536 > self.spn:
+            self.spn *= 2
+            self.paintMap()
+        elif event.key() == Qt.Key_PageDown and 0.000125 < self.spn:
+            self.spn /= 2
+            self.paintMap()
+        if event.key() == Qt.Key_Down:
+            if self.coords[1] - self.spn / 5 >= -89 + self.spn / 2:
+                self.coords[1] -= self.spn / 5
+                self.pt[1] -= 75
+                self.paintMap()
+        if event.key() == Qt.Key_Up:
+            if self.coords[1] + self.spn / 5 <= 89 - self.spn / 2:
+                self.coords[1] += self.spn / 5
+                self.pt[1] += 75
+                self.paintMap()
+        if event.key() == Qt.Key_Right:
+            if self.coords[0] + self.spn / 5 <= 89 - self.spn / 2:
+                self.coords[0] += self.spn / 5
+                self.pt[0] += 75
+                self.paintMap()
+        if event.key() == Qt.Key_Left:
+            if self.coords[0] - self.spn / 5 >= -89 + self.spn / 2:
+                self.coords[0] -= self.spn / 5
+                self.pt[0] -= 75
+                self.paintMap()
+
+    def mousePressEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            x = event.pos().x()
+            y = event.pos().y()
+            self.point[0] += round((x - self.pt[0]) * self.spn / 200, 6)
+            self.point[1] += round((self.pt[1] - y) * self.spn / 300, 6)
+            self.pt = [x, y]
+            self.paintMap()
+        elif event.buttons() == Qt.RightButton:
+            x = event.pos().x()
+            y = event.pos().y()
+            self.organisation(self.point[0] + round((x - self.pt[0]) * self.spn / 200, 6),
+                              self.point[1] + round((self.pt[1] - y) * self.spn / 300, 6))
+            self.pt = [x, y]
+            self.paintMap()
+
+    def organisation(self, adr_x, adr_y):
+        search_api_server = "https://search-maps.yandex.ru/v1/"
+        api_key = "3e8a0f3a-5664-44d3-a32b-ee1172561833"
+        address_ll = f"{adr_x}, {adr_y}"
+        search_params = {
+            "apikey": api_key,
+            "text": self.lineEdit.text(),
+            "lang": "ru_RU",
+            "ll": address_ll,
+            "spn": f"{adr_x - 0.05 / 111},{adr_y + 0.05 / 111}",
+            "type": "biz"
+        }
+        response = requests.get(search_api_server, params=search_params)
+        if response:
+            json_response = response.json()['features'][0]
+            org_coord = json_response['geometry']['coordinates']
+            self.lineEdit.setText(json_response['properties']['name'])
+            self.coords = org_coord
+            self.point = org_coord
+
+    def getImage(self):
+        map_request = "http://static-maps.yandex.ru/1.x/"
+        params = {
+            "ll": f'{self.coords[0]},{self.coords[1]}',
+            "spn": f'{self.spn},{self.spn}',
+            "l": self.view
+        }
+        if self.point:
+            params['pt'] = f'{self.point[0]},{self.point[1]},pm2bll'
+        response = requests.get(map_request, params=params)
+
+        if not response:
+            print("Ошибка выполнения запроса:")
+            print(map_request)
+            print("Http статус:", response.status_code, "(", response.reason, ")")
+            sys.exit(1)
+
+        self.map_file = "map.png"
+        with open(self.map_file, "wb") as file:
+            file.write(response.content)
+
+    def paintMap(self):
+        self.getImage()
+        self.pixmap = QPixmap(self.map_file)
+        self.map_label.move(0, 0)
+        self.map_label.resize(600, 450)
+        self.map_label.setPixmap(self.pixmap)
+        self.lineEdit_2.setText(self.returne_adress(",".join([str(i) for i in self.point])))
+        self.repaint()
+
+    def closeEvent(self, event):
+        """При закрытии формы подчищаем за собой"""
+        os.remove(self.map_file)
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = Example()
+    ex.show()
+    sys.exit(app.exec())

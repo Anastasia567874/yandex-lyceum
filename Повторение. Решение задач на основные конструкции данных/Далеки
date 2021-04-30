@@ -1,0 +1,7 @@
+import sys
+data = list(map(str.strip, sys.stdin))
+k = 0
+for i in data:
+    if 'далек' in i.lower():
+        k += 1
+print(k)

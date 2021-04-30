@@ -1,0 +1,14 @@
+import sys
+data = list(map(str.strip, sys.stdin))
+k = 0
+for i in data:
+    x = ''
+    for j in i.lower():
+        if j.isalpha() or j == ' ' or j == '-':
+            x += j
+    x = x.split()
+    for j in x:
+        if j.startswith('далек'):
+            k += 1
+            break
+print(k)

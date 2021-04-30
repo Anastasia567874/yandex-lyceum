@@ -1,0 +1,24 @@
+import os
+
+
+def human_read_format(size):
+    n = ['Б', 'КБ', 'МБ', 'ГБ']
+    k = 0
+    while size >= 1024:
+        size /= 1024
+        k += 1
+    return f'{round(size)}{n[k]}'
+
+
+f = input()
+os.chdir(f)
+sete = []
+for i in os.listdir():
+    if os.path.isdir(f + '/' + i):
+        r = 0
+        for currentdir, dirs, files in os.walk(f + '/' + i):
+            for j in files:
+                r += os.path.getsize(currentdir + '/' + j)
+        sete.append([i, r])
+for i in sorted(sete, key=lambda x: x[1], reverse=True)[:10]:
+    print(f'{i[0]} - {human_read_format(i[1])}')

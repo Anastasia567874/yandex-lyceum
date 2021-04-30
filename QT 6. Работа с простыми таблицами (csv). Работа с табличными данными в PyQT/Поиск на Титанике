@@ -1,0 +1,105 @@
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(20, 80, 741, 451))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setGeometry(QtCore.QRect(260, 20, 351, 31))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lineEdit.setFont(font)
+        self.lineEdit.setObjectName("lineEdit")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(20, 20, 231, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(630, 20, 131, 41))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton.setFont(font)
+        self.pushButton.setObjectName("pushButton")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label.setText(_translate("MainWindow", "Строка для поиска:"))
+        self.pushButton.setText(_translate("MainWindow", "Поиск"))
+
+
+
+import csv
+import sys
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+from PyQt5.QtGui import QColor
+
+
+class MyWidget(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.name = 'titanic.csv'
+        self.loadTable()
+        self.pushButton.clicked.connect(self.loadTable)
+
+    def loadTable(self):
+        with open(self.name, encoding="utf8") as csvfile:
+            reader = csv.reader(csvfile,
+                                delimiter=',', quotechar='"')
+            title = next(reader)
+            sete = list(reader)
+            sete.sort(key=lambda x: (int(x[-1]), x[1].split()[-2]), reverse=True)
+            self.tableWidget.setColumnCount(len(title))
+            self.tableWidget.setHorizontalHeaderLabels(title)
+            self.tableWidget.setRowCount(0)
+            k = 0
+            color = [(220, 20, 60), (124, 252, 0)]
+            name = self.lineEdit.text()
+            for row in sete:
+                if len(name) < 3 or name.upper() in row[1].upper():
+                    self.tableWidget.setRowCount(self.tableWidget.rowCount() + 1)
+                    for j, kol in enumerate(row):
+                        self.tableWidget.setItem(k, j, QTableWidgetItem(kol))
+                    self.color_row(k, QColor(*color[int(row[5])]))
+                    k += 1
+        self.tableWidget.resizeColumnsToContents()
+
+    def color_row(self, row, color):
+        for i in range(self.tableWidget.columnCount()):
+            self.tableWidget.item(row, i).setBackground(color)
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = MyWidget()
+    ex.show()
+    sys.exit(app.exec())

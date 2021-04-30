@@ -1,0 +1,15 @@
+import csv
+import sqlite3
+name = input()
+n = input()
+con = sqlite3.connect(name)
+cur = con.cursor()
+x = f'''select Sails.id, Sails.title, Run_ship.state, Sails.size from Sails
+inner join Run_ship on Sails.id = Run_ship.sail_id
+where Run_ship.direction_id in (select id from Directions where title = "{n}") order by Sails.size desc'''
+result = cur.execute(x).fetchall()
+con.close()
+f = open("sails_state.csv", mode='w', newline='')
+sete = csv.writer(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+for i in result:
+    sete.writerow(i)

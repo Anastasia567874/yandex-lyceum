@@ -1,0 +1,91 @@
+import sys
+
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QPlainTextEdit
+from PyQt5.QtWidgets import QLabel, QLineEdit
+
+
+class Example(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setGeometry(300, 300, 250, 350)
+        self.setWindowTitle('Вычисление выражений')
+
+        self.output = QLineEdit('', self)
+        self.output.setEnabled(False)
+        self.output.resize(200, 30)
+        self.output.move(10, 0)
+
+        self.output1 = QLineEdit('', self)
+        self.output1.setEnabled(False)
+        self.output1.resize(200, 50)
+        self.output1.move(10, 30)
+
+        k = 0
+        self.y = ''
+        self.x = ''
+        self.z = ''
+        sete = ['7', '4', '1', 'C', '.', '8', '5', '2', '0', '+-', '9', '6', '3', 'CE', '=', '/', '*', '-', '+']
+        for i in range(4):
+            for j in range(5):
+                if not (i == 3 and j == 4):
+                    self.btn = QPushButton(sete[k], self)
+                    self.btn.resize(50, 50)
+                    self.btn.move(i * 50 + i * 2 + 10, j * 50 + 82 + j * 2)
+                    if sete[k] == 'C' or sete[k] == 'CE':
+                        self.btn.clicked.connect(self.delete)
+                    elif sete[k] == '+-':
+                        self.btn.clicked.connect(self.sd)
+                        # умножает последнюю цифру на -1
+                    elif sete[k] == '=':
+                        self.btn.resize(102, 50)
+                        self.btn.clicked.connect(self.end)
+                    else:
+                        self.btn.clicked.connect(self.chislo)
+                    k += 1
+
+    def chislo(self):
+        a = self.sender().text()
+        if a in ['/', '*', '-', '+']:
+            self.y = str(eval(self.y + self.z + self.x))
+            self.x = ''
+            self.z = a
+            self.output1.setText('')
+        else:
+            if a == '0' and self.z == '/':
+                self.output1.setText('ERROR')
+                return
+            self.x += a
+            self.output1.setText(self.x)
+        self.output.setText(self.output.text() + a)
+
+    def delete(self):
+        x = self.sender().text()
+        if x == 'C':
+            self.output1.setText('')
+            self.output.setText('')
+            self.y, self.z, self.x = '', '', ''
+        else:
+            if self.output1.text()[-1] in ['*', '-', '+', '/']:
+                self.z = ''
+                self.output1.setText('')
+            else:
+                self.x = self.x[:-1]
+                self.output.setText(self.output.text()[:-1])
+                self.output1.setText(self.output1.text()[:-1])
+
+    def sd(self):
+        self.x = str(int(self.x) * -1)
+
+    def end(self):
+        self.output.setText('')
+        self.output1.setText(str(eval(self.y + self.z + self.x)))
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = Example()
+    ex.show()
+    sys.exit(app.exec())

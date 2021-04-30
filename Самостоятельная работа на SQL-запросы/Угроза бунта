@@ -1,0 +1,11 @@
+import sqlite3
+name = input()
+s = input()
+uslov = input()
+con = sqlite3.connect(name)
+cur = con.cursor()
+result = cur.execute(f'select name, cheef, loyalty from danger where {uslov} {s} workload >= 41').fetchall()
+answer = sorted(result, key=lambda x: x[2])
+for elem in answer:
+    print(f'{elem[0]} ({elem[1]})')
+con.close()

@@ -1,0 +1,8 @@
+import csv
+import xlrd
+f = xlrd.open_workbook("data.xlsx", 'r')
+first_sheet = f.sheet_by_index(0)
+s = open("output.csv", mode='w', newline='')
+sete = csv.writer(s, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+for i in range(first_sheet.nrows):
+    sete.writerow(first_sheet.row_values(i))

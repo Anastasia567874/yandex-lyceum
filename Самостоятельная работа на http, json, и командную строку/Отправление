@@ -1,0 +1,16 @@
+import json
+import sys
+
+sete_dict = {
+    'correctly': {},
+    'incorrectly': {}
+}
+data = list(map(str.strip, sys.stdin))
+for i in data:
+    x, y = i.split(': ')
+    if y == '-1' or y == 'done':
+        sete_dict['correctly'][x] = y
+    else:
+        sete_dict['incorrectly'][x] = y
+with open('ready.json', 'w') as f:
+    json.dump(sete_dict, f)

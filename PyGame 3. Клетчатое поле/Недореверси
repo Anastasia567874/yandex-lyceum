@@ -1,0 +1,71 @@
+import pygame
+from random import randrange
+
+
+class Board:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.board = [[randrange(0, 2) for _ in range(width)] for _ in range(height)]
+        self.cell_size = 40
+        self.left = (size[0] - (width * self.cell_size)) // 2
+        self.top = (size[1] - (height * self.cell_size)) // 2
+
+    def set_view(self, left, top, cell_size):
+        self.left = left
+        self.top = top
+        self.cell_size = cell_size
+
+    def render(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                sx = self.left + x * self.cell_size
+                sy = self.top + y * self.cell_size
+                pygame.draw.rect(screen, pygame.Color('white'), (sx, sy, self.cell_size, self.cell_size), 3)
+                pygame.draw.rect(screen, pygame.Color('black'),
+                                 (sx + 1, sy + 1, self.cell_size - 1, self.cell_size - 1))
+                if self.board[y][x] == 0:
+                    color = 'blue'
+                else:
+                    color = 'red'
+                pygame.draw.circle(screen, pygame.Color(color),
+                                   (sx + self.cell_size // 2, sy + self.cell_size // 2),
+                                   (self.cell_size - 4) // 2)
+
+    def get_cell(self, mouse_pos):
+        sx, sy = mouse_pos
+        x = (sx - self.left) // self.cell_size
+        y = (sy - self.top) // self.cell_size
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return (x, y)
+
+    def on_click(self, cell_coords):
+        if cell_coords:
+            x, y = cell_coords
+            for i in range(self.height):
+                self.board[i][x] = self.board[y][x]
+            for i in range(self.width):
+                self.board[y][i] = self.board[y][x]
+
+    def get_click(self, mouse_pos):
+        cell = self.get_cell(mouse_pos)
+        self.on_click(cell)
+
+
+if __name__ == '__main__':
+    n = int(input())
+    pygame.init()
+    pygame.display.set_caption('Недореверси')
+    size = width, height = 400, 400
+    screen = pygame.display.set_mode(size)
+    board = Board(n, n)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                board.get_click(event.pos)
+        screen.fill((0, 0, 0))
+        board.render()
+        pygame.display.flip()

@@ -1,0 +1,33 @@
+from flask import Flask, jsonify
+import argparse
+import csv
+
+app = Flask(__name__)
+
+
+@app.route("/types/")
+def index():
+    global name
+    with open(name, encoding="utf8") as csvfile:
+        reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+        d = {}
+        for id, creature_type, habitat, color, height, feeds_on in list(reader)[1:]:
+            data = {}
+            if creature_type in d:
+                data = d[creature_type]
+            data['colors'] = sorted(list(set(data.get('colors', []) + [color])))
+            data['feeds'] = sorted(list(set(data.get('feeds', []) + [feeds_on])))
+            data['habitats'] = sorted(list(set(data.get('habitats', []) + [habitat])))
+            data['heights'] = sorted(list(set(data.get('heights', []) + [height])))
+            d[creature_type] = data
+    return jsonify(d)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host")
+    parser.add_argument("--port", type=int)
+    parser.add_argument("--file")
+    args = parser.parse_args()
+    name = args.file
+    app.run(host=args.host, port=args.port)

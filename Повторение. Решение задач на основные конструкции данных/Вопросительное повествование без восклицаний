@@ -1,0 +1,17 @@
+import sys
+data = str_data = sys.stdin.read().lower().replace('\n', ' ')
+data = data.replace('?', ' ?\n').replace('!', ' !\n').replace('.', ' .\n').strip().split('\n')
+sete = [[], [], []]
+for i in data:
+    x = i.split()
+    if x[-1] == '?':
+        sete[0].extend(x[:-1])
+    elif x[-1] == '!':
+        sete[1].extend(x[:-1])
+    else:
+        sete[2].extend(x[:-1])
+sd = []
+for i in sorted(sete[0]):
+    if i in sete[2] and i not in sete[1] and i not in sd:
+        sd.append(i)
+print(*sd)

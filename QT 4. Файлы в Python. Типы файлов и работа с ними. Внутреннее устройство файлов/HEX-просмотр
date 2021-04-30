@@ -1,0 +1,13 @@
+f = open('data.txt', mode='rb').read()
+print(' ' * 10 + ' '.join(f'{hex(i)[2:]:0>2}' for i in range(16)), '\n')
+for i in range(0, len(f), 16):
+    k = []
+    for j in f[i:i + 16]:
+        k.append(f'{hex(j)[2:]:0>2}')
+    s = ''
+    for j in f[i:i + 16]:
+        if chr(j).isprintable():
+            s += chr(j)
+        else:
+            s += '.'
+    print(f'{hex(i)[2:]:0>6}' + ' ' * 4 + f'{" ".join(k):<50}' + '  ' + s)

@@ -1,0 +1,51 @@
+class Bell:
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def print_info(self):
+        if not self.args and not self.kwargs:
+            print('-')
+        sete = []
+        for i in sorted(self.kwargs.keys()):
+            sete.append(f'{i}: {self.kwargs[i]}')
+        sete2 = []
+        for i in self.args:
+            sete2.append(i)
+        if sete:
+            if sete2:
+                print(', '.join(sete), end='')
+            else:
+                print(', '.join(sete))
+        if sete2:
+            if sete:
+                print(';', end=' ')
+            print(', '.join(sete2))
+
+
+class LittleBell(Bell):
+    def sound(self):
+        print('ding')
+
+
+class BigBell(Bell):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.k = 0
+
+    def sound(self):
+        print('ding' if self.k % 2 == 0 else 'dong')
+        self.k += 1
+
+
+class BellTower:
+    def __init__(self, *args):
+        self.sete = list(args)
+
+    def append(self, s):
+        self.sete.append(s)
+
+    def sound(self):
+        for i in self.sete:
+            i.sound()
+        print('...')

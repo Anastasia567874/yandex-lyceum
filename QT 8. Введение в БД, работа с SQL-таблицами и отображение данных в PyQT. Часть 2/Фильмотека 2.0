@@ -1,0 +1,381 @@
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1016, 738)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setGeometry(QtCore.QRect(20, 20, 951, 651))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.tabWidget.setFont(font)
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.tableWidget = QtWidgets.QTableWidget(self.tab)
+        self.tableWidget.setGeometry(QtCore.QRect(20, 80, 901, 521))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.pushButton = QtWidgets.QPushButton(self.tab)
+        self.pushButton.setGeometry(QtCore.QRect(30, 20, 191, 41))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(self.tab)
+        self.pushButton_2.setGeometry(QtCore.QRect(240, 20, 231, 41))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_3 = QtWidgets.QPushButton(self.tab)
+        self.pushButton_3.setGeometry(QtCore.QRect(490, 20, 191, 41))
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.tableWidget_2 = QtWidgets.QTableWidget(self.tab_2)
+        self.tableWidget_2.setGeometry(QtCore.QRect(20, 80, 901, 521))
+        self.tableWidget_2.setObjectName("tableWidget_2")
+        self.tableWidget_2.setColumnCount(0)
+        self.tableWidget_2.setRowCount(0)
+        self.pushButton_4 = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton_4.setGeometry(QtCore.QRect(30, 20, 191, 41))
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.pushButton_5 = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton_5.setGeometry(QtCore.QRect(240, 20, 221, 41))
+        self.pushButton_5.setObjectName("pushButton_5")
+        self.pushButton_6 = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton_6.setGeometry(QtCore.QRect(480, 20, 191, 41))
+        self.pushButton_6.setObjectName("pushButton_6")
+        self.tabWidget.addTab(self.tab_2, "")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1016, 21))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(0)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.pushButton.setText(_translate("MainWindow", "Добавить фильм"))
+        self.pushButton_2.setText(_translate("MainWindow", "Редактировать фильм"))
+        self.pushButton_3.setText(_translate("MainWindow", "Удалить фильм"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Фильмы"))
+        self.pushButton_4.setText(_translate("MainWindow", "Добавить жанр"))
+        self.pushButton_5.setText(_translate("MainWindow", "Редактировать жанр"))
+        self.pushButton_6.setText(_translate("MainWindow", "Удалить жанр"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Жанры"))
+
+
+class Window_film(QtWidgets.QDialog):
+    def __init__(self, id='', parent=None):
+        super(Window_film, self).__init__(parent)
+        self.setGeometry(300, 300, 610, 540)
+        self.result = []
+        self.id = id
+        self.label = QtWidgets.QLabel("Название", self)
+        self.label.setGeometry(QtCore.QRect(80, 90, 131, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label_2 = QtWidgets.QLabel("Год выпуска", self)
+        self.label_2.setGeometry(QtCore.QRect(70, 180, 151, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_2.setFont(font)
+        self.label_3 = QtWidgets.QLabel("Жанр", self)
+        self.label_3.setGeometry(QtCore.QRect(120, 270, 91, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_3.setFont(font)
+        self.label_4 = QtWidgets.QLabel("Длина", self)
+        self.label_4.setGeometry(QtCore.QRect(110, 350, 101, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_4.setFont(font)
+        self.lineEdit = QtWidgets.QLineEdit(self)
+        self.lineEdit.setGeometry(QtCore.QRect(240, 90, 231, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lineEdit.setFont(font)
+        self.lineEdit_2 = QtWidgets.QLineEdit(self)
+        self.lineEdit_2.setGeometry(QtCore.QRect(240, 180, 231, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lineEdit_2.setFont(font)
+        self.lineEdit_3 = QtWidgets.QLineEdit(self)
+        self.lineEdit_3.setGeometry(QtCore.QRect(240, 350, 231, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lineEdit_3.setFont(font)
+        self.comboBox = QtWidgets.QComboBox(self)
+        self.comboBox.setGeometry(QtCore.QRect(240, 270, 231, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.comboBox.setFont(font)
+        self.item()
+        if id:
+            n = 'Изменить'
+        else:
+            n = 'Добавить'
+        self.pushButton = QtWidgets.QPushButton(n, self)
+        self.pushButton.setGeometry(QtCore.QRect(400, 430, 201, 51))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton.setFont(font)
+        self.pushButton.clicked.connect(self.film)
+        self.label_5 = QtWidgets.QLabel(self)
+        self.label_5.setGeometry(QtCore.QRect(30, 440, 351, 31))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_5.setFont(font)
+
+    def item(self):
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        result = cur.execute("""SELECT title FROM genres""").fetchall()
+        for i in result:
+            self.comboBox.addItem(i[0])
+        if self.id:
+            result = cur.execute(f"SELECT * FROM films where id = {self.id}").fetchone()
+            self.lineEdit.setText(result[1])
+            self.lineEdit_2.setText(str(result[2]))
+            self.lineEdit_3.setText(str(result[4]))
+            self.comboBox.setCurrentIndex(int(result[3]) - 1)
+        con.close()
+
+    def film(self):
+        if not self.lineEdit_2.text().isdigit():
+            self.label_5.setText('Год выпуска должен содержать только цифры')
+        elif not self.lineEdit_3.text().isdigit():
+            self.label_5.setText('Длина должна содержать только цифры')
+        elif not self.lineEdit.text():
+            self.label_5.setText('Напишите название фильма')
+        else:
+            self.result = [self.lineEdit.text(), self.lineEdit_2.text(), self.comboBox.currentText(),
+                           self.lineEdit_3.text()]
+            self.close()
+
+
+class Window_genre(QtWidgets.QDialog):
+    def __init__(self, id='', parent=None):
+        super(Window_genre, self).__init__(parent)
+        self.setGeometry(300, 300, 520, 280)
+        self.result = ''
+        self.id = id
+        if self.id:
+            n = 'Изменить'
+        else:
+            n = 'Добавить'
+        self.pushButton = QtWidgets.QPushButton(n, self)
+        self.pushButton.setGeometry(QtCore.QRect(190, 140, 181, 41))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton.setFont(font)
+        self.pushButton.clicked.connect(self.film)
+        self.label = QtWidgets.QLabel("Название", self)
+        self.label.setGeometry(QtCore.QRect(60, 60, 121, 41))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.lineEdit = QtWidgets.QLineEdit(self)
+        self.lineEdit.setGeometry(QtCore.QRect(210, 70, 291, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lineEdit.setFont(font)
+        self.item()
+        self.label_5 = QtWidgets.QLabel(self)
+        self.label_5.setGeometry(QtCore.QRect(50, 20, 461, 31))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_5.setFont(font)
+
+    def film(self):
+        if self.lineEdit.text() == '':
+            self.label_5.setText('Напишите название жанра')
+        else:
+            self.result = self.lineEdit.text()
+            self.close()
+
+    def item(self):
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        if self.id:
+            result = cur.execute(f"""SELECT title FROM genres where id = {self.id}""").fetchone()
+            self.lineEdit.setText(result[0])
+        con.close()
+
+
+import sys
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+import sqlite3
+
+
+class MyWidget(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.update_result_films()
+        self.update_result_genres()
+        self.pushButton.clicked.connect(self.add_film)
+        self.pushButton_2.clicked.connect(self.change_film)
+        self.pushButton_3.clicked.connect(self.del_film)
+        self.pushButton_4.clicked.connect(self.add_genre)
+        self.pushButton_5.clicked.connect(self.change_genre)
+        self.pushButton_6.clicked.connect(self.del_genre)
+
+    def del_genre(self):
+        id = self.tableWidget_2.item(self.tableWidget_2.currentRow(), 0).text()
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        valid = QMessageBox.question(
+            self, '', 'Вы точно хотите удалить элемени с id ' + id,
+            QMessageBox.Yes, QMessageBox.No
+        )
+        if valid == QMessageBox.Yes:
+            cur.execute(f"""DELETE from genres where id = {id}""")
+            con.commit()
+        con.close()
+        self.update_result_genres()
+
+    def add_genre(self):
+        ex2 = Window_genre(parent=self)
+        ex2.exec_()
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        result = ex2.result
+        try:
+            cur.execute(f"""INSERT INTO genres(title) VALUES ('{result}')""")
+            con.commit()
+        except Exception:
+            pass
+        con.close()
+        self.update_result_genres()
+
+    def change_genre(self):
+        id = self.tableWidget_2.item(self.tableWidget_2.currentRow(), 0).text()
+        ex2 = Window_genre(parent=self, id=id)
+        ex2.exec_()
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        result = ex2.result
+        cur.execute(f"""update genres set title = '{result}' where id = {id}""")
+        con.commit()
+        con.close()
+        self.update_result_genres()
+
+    def add_film(self):
+        ex2 = Window_film(parent=self)
+        ex2.exec_()
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        result = ex2.result
+        try:
+            cur.execute(f"""INSERT INTO films(title,year,genre,duration)
+VALUES('{result[0]}',{result[1]}, (select id from genres where title='{result[2]}'), {result[3]})""")
+            con.commit()
+        except Exception:
+            pass
+        con.close()
+        self.update_result_films()
+
+    def change_film(self):
+        id = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
+        ex2 = Window_film(parent=self, id=id)
+        ex2.exec_()
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        result = ex2.result
+        cur.execute(f"""update films
+set title = '{result[0]}', year = {result[1]}, genre = (select id from genres where title='{result[2]}'), duration = {result[3]}
+where id = {id}""")
+        con.commit()
+        con.close()
+        self.update_result_films()
+
+    def del_film(self):
+        id = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        valid = QMessageBox.question(
+            self, '', 'Вы точно хотите удалить элемени с id ' + id,
+            QMessageBox.Yes, QMessageBox.No
+        )
+        if valid == QMessageBox.Yes:
+            cur.execute(f"""DELETE from films where id = {id}""")
+            con.commit()
+        con.close()
+        self.update_result_films()
+
+    def update_result_genres(self):
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        result = cur.execute("""SELECT * FROM genres""").fetchall()
+        self.tableWidget_2.setRowCount(len(result))
+        self.tableWidget_2.setColumnCount(len(result[0]))
+        titles = [description[0] for description in cur.description]
+        self.tableWidget_2.setHorizontalHeaderLabels(titles)
+        for i, elem in enumerate(result):
+            qw = elem
+            for j, val in enumerate(qw):
+                self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(val)))
+        con.close()
+
+    def update_result_films(self):
+        con = sqlite3.connect("films_db.sqlite")
+        cur = con.cursor()
+        result = cur.execute("""SELECT * FROM films INNER JOIN genres
+         ON films.genre = genres.id""").fetchall()
+        self.tableWidget.setRowCount(len(result))
+        self.tableWidget.setColumnCount(len(result[0]) - 2)
+        titles = [description[0] for description in cur.description]
+        self.tableWidget.setHorizontalHeaderLabels(titles[:5])
+        for i, elem in enumerate(result):
+            qw = [elem[0], elem[1], elem[2], elem[6], elem[4]]
+            for j, val in enumerate(qw):
+                self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+        con.close()
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = MyWidget()
+    ex.show()
+    sys.exit(app.exec())

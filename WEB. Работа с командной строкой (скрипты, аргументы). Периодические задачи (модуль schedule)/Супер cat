@@ -1,0 +1,29 @@
+import sys
+
+name = ''
+c, n, s = False, False, False
+for i in sys.argv[1:]:
+    if i == '--count':
+        c = True
+    elif i == '--num':
+        n = True
+    elif i == '--sort':
+        s = True
+    else:
+        name = i
+try:
+    f = open(name, mode='rt', encoding='utf8').readlines()
+except Exception:
+    print('ERROR')
+    sys.exit(0)
+if s:
+    f = sorted(f)
+k = 0
+for i in f:
+    if n:
+        print(f'{k} {i.rstrip()}')
+    else:
+        print(i.rstrip())
+    k += 1
+if c:
+    print(f'rows count: {k}')

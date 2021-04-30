@@ -1,0 +1,49 @@
+import pygame
+from math import sin, cos, radians
+
+
+def coords(x, y, g, x0, y0):
+    g = radians(g)
+    x1 = x0 + (x - x0) * cos(g) - (y - y0) * sin(g)
+    y1 = y0 + (x - x0) * sin(g) + (y - y0) * cos(g)
+    return int(x1), int(y1)
+
+
+def draw(g):
+    screen.fill((0, 0, 0))
+    pygame.draw.circle(screen, pygame.Color('white'), (x, y), 10)
+    pygame.draw.polygon(screen, pygame.Color('white'), ((x, y), coords(x, y - 70, g - 15, x, y),
+                                                        coords(x, y - 70, g + 15, x, y)))
+    pygame.draw.polygon(screen, pygame.Color('white'), ((x, y), coords(x, y - 70, g + 105, x, y),
+                                                        coords(x, y - 70, g + 135, x, y)))
+    pygame.draw.polygon(screen, pygame.Color('white'), ((x, y), coords(x, y - 70, g + 225, x, y),
+                                                        coords(x, y - 70, g + 255, x, y)))
+
+
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_caption('Вентилятор')
+    size = width, height = 201, 201
+    screen = pygame.display.set_mode(size)
+
+    clock = pygame.time.Clock()
+    running = True
+    fps = 100
+    x, y = width // 2, height // 2
+    v, g = 0, 0
+    draw(g)
+    pass
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == pygame.BUTTON_LEFT:
+                    v -= 50
+                elif event.button == pygame.BUTTON_RIGHT:
+                    v += 50
+        g += v // 50
+        draw(g)
+        pygame.display.flip()
+        clock.tick(fps)
+    pygame.quit()

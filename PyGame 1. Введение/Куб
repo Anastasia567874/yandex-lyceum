@@ -1,0 +1,31 @@
+import pygame
+
+
+def draw():
+    screen.fill((0, 0, 0))
+    color = pygame.Color('white')
+    color.hsva = (hue, 100, 75)
+    pygame.draw.polygon(screen, color, ((150 - w // 2, 150), (150 + w // 2, 150),
+                                        (150 + w // 2, 150 + w), (150 - w // 2, 150 + w)))
+    color.hsva = (hue, 100, 100)
+    pygame.draw.polygon(screen, color, ((150 - w // 2, 150), (150, 150 - w // 2),
+                                        (150 + w, 150 - w // 2), (150 + w // 2, 150)))
+    color.hsva = (hue, 100, 50)
+    pygame.draw.polygon(screen, color, ((150 + w // 2, 150), (150 + w, 150 - w // 2),
+                                        (150 + w, 150 + w // 2), (150 + w // 2, 150 + w)))
+
+
+if __name__ == '__main__':
+    w, hue = [int(i) for i in input().split()]
+    if 0 < w <= 100 and w % 4 == 0 and 0 <= hue <= 360:
+        size = width, height = 300, 300
+        pygame.init()
+        screen = pygame.display.set_mode(size)
+        draw()
+        pygame.display.set_caption('Куб')
+        pygame.display.flip()
+        while pygame.event.wait().type != pygame.QUIT:
+            pass
+        pygame.quit()
+    else:
+        print('Неправильный формат ввода')

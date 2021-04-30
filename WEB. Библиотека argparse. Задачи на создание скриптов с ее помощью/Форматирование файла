@@ -1,0 +1,29 @@
+import argparse
+
+
+def format_text_block(frame_height, frame_width, file_name):
+    try:
+        s = open(file_name, encoding="utf8").readlines()
+    except Exception as p:
+        return p
+    sete = []
+    for i in ''.join(s).split('\n'):
+        pr = True
+        for j in range(0, len(i), frame_width):
+            pr = False
+            sete.append(i[j:j + frame_width])
+        if pr:
+            sete.append('')
+    return '\n'.join(sete[:frame_height])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--frame-height', nargs=1, type=int, dest='frame_height')
+    parser.add_argument('--frame-width', nargs=1, type=int, dest='frame_width')
+    parser.add_argument('file_name', nargs=1, type=str)
+    arg = parser.parse_args()
+    height = arg.frame_height[0]
+    width = arg.frame_width[0]
+    name = arg.file_name[0]
+    print(format_text_block(height, width, name))

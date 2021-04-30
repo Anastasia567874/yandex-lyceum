@@ -1,0 +1,50 @@
+import os
+import sys
+import pygame
+import requests
+import math
+
+
+def lonlat_distance(a, b):
+    degree_to_meters_factor = 111 * 1000
+    a_lon, a_lat = a
+    b_lon, b_lat = b
+    radians_lattitude = math.radians((a_lat + b_lat) / 2.)
+    lat_lon_factor = math.cos(radians_lattitude)
+    dx = abs(a_lon - b_lon) * degree_to_meters_factor * lat_lon_factor
+    dy = abs(a_lat - b_lat) * degree_to_meters_factor
+    distance = math.sqrt(dx * dx + dy * dy)
+    return distance
+
+
+coords = '55.034898,51.786075,55.034898,51.787167,55.040434,51.787517,55.047043,51.787836,' \
+         '55.052794,51.785973,55.056570,51.784323,55.058974,51.782300,55.062836,51.779479,55.070046,51.783418,55.077255,51.786772,55.078715,' \
+         '51.785068,55.081461,51.783684,55.083521,51.781608,55.095366,51.770693,55.099228,51.771013,55.100580,51.768337,55.100709,' \
+         '51.767685,55.098971,51.767272,55.100837,51.763797,55.099958,51.763597'.split(',')
+if (len(coords) // 2) % 2 == 0:
+    x = len(coords) // 2
+else:
+    x = len(coords) // 4 * 2
+map_request = f"https://static-maps.yandex.ru/1.x/?ll={coords[x]},{coords[x + 1]}&size=600,450&z=13&l=map,sat&" \
+              f"pl=c:ec473fFF,f:00FF00A0, w:7,{','.join(coords)}&pt={coords[x]},{coords[x + 1]},pm2rdl"
+response = requests.get(map_request)
+if not response:
+    print("Ошибка выполнения запроса:")
+    print(map_request)
+    print("Http статус:", response.status_code, "(", response.reason, ")")
+    sys.exit(1)
+s = 0
+for i in range(0, len(coords) - 2, +2):
+    s += lonlat_distance([float(coords[i]), float(coords[i + 1])], [float(coords[i + 2]), float(coords[i + 3])])
+print('Длина пути равна', s, 'метров')
+map_file = "map.png"
+with open(map_file, "wb") as file:
+    file.write(response.content)
+pygame.init()
+screen = pygame.display.set_mode((600, 450))
+screen.blit(pygame.image.load(map_file), (0, 0))
+pygame.display.flip()
+while pygame.event.wait().type != pygame.QUIT:
+    pass
+pygame.quit()
+os.remove(map_file)

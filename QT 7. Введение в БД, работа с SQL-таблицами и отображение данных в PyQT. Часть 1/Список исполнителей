@@ -1,0 +1,12 @@
+import sqlite3
+f = sqlite3.connect("music_db.sqlite")
+cur = f.cursor()
+genre = input()
+x = f'''select name from artist
+ where artistid in (select artistid from album
+  where albumid in (select albumid from track
+   where genreid = (select genreid from genre where name = "{genre}"))) order by "name"'''
+result = cur.execute(x).fetchall()
+for i in result:
+    print(*i)
+f.close()

@@ -1,0 +1,31 @@
+from flask import Flask
+# from data.departments import Department
+# from data.users import User
+# from data.jobs import Jobs
+# from data.db_session import global_init, create_session
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+
+def main():
+    name = input()
+    global_init(name)
+    db_sess = create_session()
+    sete = {}
+    for id in db_sess.query(Department).filter(Department.id == 1).first().members.split(', '):
+        sete[id] = 0
+    for job in db_sess.query(Jobs):
+        for ind in job.collaborators.split(', '):
+            if ind in sete:
+                sete[ind] += job.work_size
+    for user in db_sess.query(User):
+        if str(user.id) in sete:
+            if sete[str(user.id)] > 25:
+                print(user.surname, user.name)
+    # app.run()
+
+
+if __name__ == '__main__':
+    main()
+

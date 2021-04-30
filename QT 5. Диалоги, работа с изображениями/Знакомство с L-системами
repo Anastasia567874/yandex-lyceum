@@ -1,0 +1,108 @@
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.horizontalSlider = QtWidgets.QSlider(self.centralwidget)
+        self.horizontalSlider.setGeometry(QtCore.QRect(70, 481, 621, 31))
+        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setObjectName("horizontalSlider")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+
+import sys
+from PyQt5.QtGui import QPainter
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
+from math import pi, cos, sin
+
+
+class MyWidget(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        fname = QFileDialog.getOpenFileName(self, 'Выберете файл', '')[0]
+        self.k = 0
+        f = open(fname).readlines()
+        self.ug = int(360 / int(f[1].strip()))
+        self.a = f[2].strip()
+        self.sete = {}
+        for i in f[3:]:
+            i = i.strip().split()
+            self.sete[i[0]] = i[1]
+        self.horizontalSlider.valueChanged.connect(self.changeValue)
+
+    def changeValue(self, value):
+        self.k = int(value / 5)
+        self.paint()
+
+    def paint(self):
+        self.repaint()
+
+    def paintEvent(self, event):
+        qp = QPainter()
+        qp.begin(self)
+        self.rec(qp)
+        qp.end()
+
+    def rec(self, qp):
+        teor = list(self.a)
+        rot = ''
+        for i in range(self.k):
+            for j in teor:
+                if j in self.sete:
+                    rot += self.sete[j]
+                else:
+                    rot += j
+            teor = list(rot)
+            rot = ''
+        x, y, a = 250, 500, 0
+        qw = []
+        side = 10
+        for i in teor:
+            if i == 'F':
+                x1, y1 = int(x + side * cos(a * pi / 180)), int(y + side * sin(a * pi / 180))
+                qp.drawLine(x, y, x1, y1)
+                x, y = x1, y1
+            elif i == 'f':
+                x1, y1 = int(x + side * cos(a * pi / 180)), int(y + side * sin(a * pi / 180))
+                x, y = x1, y1
+            elif i == '+':
+                a = (a + self.ug) % 360
+            elif i == '-':
+                a = (a - self.ug) % 360
+            elif i == '[':
+                qw.append((x, y))
+            elif i == ']':
+                x, y = qw[-1]
+                del qw[-1]
+            elif i == '|':
+                a = (a + 180) % 360
+
+
+def except_hook(cls, exception, traceback):
+    sys.__excepthook__(cls, exception, traceback)
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    form = MyWidget()
+    form.show()
+    sys.excepthook = except_hook
+    sys.exit(app.exec())

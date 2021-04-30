@@ -1,0 +1,13 @@
+f1 = open("present.txt", encoding='utf8', mode='rt').readline().strip().split()
+f2 = open("control.txt", encoding='utf8', mode='wt')
+sete = []
+k = 0
+for i in f1:
+    k += len(i)
+k = int(k / len(f1))
+for i in f1:
+    if len(i) > k:
+        sete.append(i)
+sete.sort(key=lambda x: (len(x), x))
+f2.write(', '.join(sete))
+f2.close()

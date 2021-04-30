@@ -1,0 +1,71 @@
+from flask import Flask, url_for, request
+
+app = Flask(__name__)
+FILE_COUNT = 1
+
+
+@app.route('/load_photo', methods=['POST', 'GET'])
+def sample_file_upload():
+    global FILE_COUNT
+    if request.method == 'GET':
+        return f'''<!doctype html>
+                                        <html lang="en">
+                                          <head>
+                                            <meta charset="utf-8">
+                                            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                                             <link rel="stylesheet"
+                                             href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+                                             integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+                                             crossorigin="anonymous">
+                                            <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
+                                            <title>Отбор астронавтов</title>
+                                          </head>
+                                          <body>
+                                            <h1>Загрузка фотографии для участия в миссии</h1>
+                                            <form method="post" enctype="multipart/form-data">
+                                               <div class="form-group">
+                                                    <label for="photo">Выберите файл и нажмите Отправить</label>
+                                                    <br/>
+                                                    <input type="file" class="form-control-file" id="photo" name="file">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Отправить</button>
+                                            </form>
+                                          </body>
+                                        </html>'''
+    elif request.method == 'POST':
+        name = f'static/img/web{FILE_COUNT}.png'
+        FILE_COUNT += 1
+        f = request.files['file']
+        q = open(name, mode='wb')
+        q.write(f.read())
+        q.close()
+        return f'''<!doctype html>
+                                <html lang="en">
+                                  <head>
+                                    <meta charset="utf-8">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                                     <link rel="stylesheet"
+                                     href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+                                     integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+                                     crossorigin="anonymous">
+                                    <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
+                                    <title>Отбор астронавтов</title>
+                                  </head>
+                                  <body>
+                                    <h1>Загрузка фотографии для участия в миссии</h1>
+                                    <form method="post" enctype="multipart/form-data">
+                                       <div class="form-group">
+                                            <label for="photo">Выберите файл и нажмите Отправить</label>
+                                            <br/>
+                                            <input type="file" class="form-control-file" id="photo" name="file">
+                                        </div>
+                                        <img src={name} alt="здесь должна была быть картинка, но не нашлась">
+                                        <br/>
+                                        <button type="submit" class="btn btn-primary">Отправить</button>
+                                    </form>
+                                  </body>
+                                </html>'''
+
+
+if __name__ == '__main__':
+    app.run(port=8080, host='127.0.0.1')

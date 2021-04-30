@@ -1,0 +1,18 @@
+import csv
+f = open("alpha_oriona.csv", encoding='utf8')
+reader = csv.reader(f, delimiter=';', quotechar='"')
+t = next(reader)
+sete = []
+m = -1
+for i in reader:
+    x = int(i[2])
+    if x > m:
+        sete.append([0])
+        sete[-1].append(i[0])
+        sete[-1].append(i[1])
+    sete[-1][0] += 1
+    m = x
+sete.sort(key=lambda x: x[0], reverse=True)
+s = open("result.txt", mode='w')
+if sete[0][0] > 1:
+    s.write(str(sete[0][0]) + '\n' + ' '.join(sete[0][1:]))

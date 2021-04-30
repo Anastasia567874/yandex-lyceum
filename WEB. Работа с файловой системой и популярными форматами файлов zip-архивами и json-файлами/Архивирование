@@ -1,0 +1,14 @@
+import shutil
+import os
+import datetime as dt
+
+
+def make_reserve_arc(source, dest):
+    os.chdir(dest)
+    name = dt.datetime.now().strftime("date-%d month-%B year-%y hour-%H minute-%M second-%S")
+    shutil.make_archive(name, 'zip', root_dir=source)
+
+
+source = input('Путь к каталогу, который надо архивировать: ')
+dest = input('Путь к каталогу, в который необходимо поместить результат: ')
+make_reserve_arc(source, dest)

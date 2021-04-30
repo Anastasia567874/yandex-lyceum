@@ -1,0 +1,16 @@
+f = open('pipes.txt').readlines()
+sete = []
+for i in f[:-2]:
+    if float(i) == 0:
+        sete.append(0)
+    else:
+        sete.append(1 / float(i))
+k = 0
+for i in f[-1].split():
+    k += sete[int(i) - 1]
+s = open("time.txt", mode='w')
+if k == 0:
+    q = '0'
+else:
+    q = str(1 / k * 60)
+s.write(q)

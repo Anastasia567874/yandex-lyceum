@@ -1,0 +1,14 @@
+import json
+import requests
+
+
+with open('address.json') as f:
+    data = json.load(f)
+    response = requests.get(f'http://{data["server"]}:{data["port"]}')
+    json_response = response.json()
+    n = len(json_response["station"])
+    s = 0
+    for i in range(n):
+        s += (json_response["station"][i] - json_response["capsule"][i]) ** 2
+    s /= n
+    print(f'{s:.3f}')

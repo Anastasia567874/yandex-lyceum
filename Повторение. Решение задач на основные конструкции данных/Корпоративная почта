@@ -1,0 +1,8 @@
+sete = {}
+for i in range(int(input())):
+    x = ''.join(list(filter(lambda j: j.isalpha() or j == '_', input()[:-12])))
+    sete[x] = sete.get(x, 0) + 1
+qw = [input() for i in range(int(input()))]
+for i in qw:
+    print(f'{i}{sete.get(i, "")}@untitled.py')
+    sete[i] = sete.get(i, 0) + 1

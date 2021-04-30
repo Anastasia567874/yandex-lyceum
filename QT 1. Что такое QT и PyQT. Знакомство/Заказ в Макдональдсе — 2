@@ -1,0 +1,71 @@
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QCheckBox, QPushButton, QPlainTextEdit, QLineEdit
+import sys
+
+
+class Example(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.dt()
+
+    def dt(self):
+        self.setGeometry(300, 300, 400, 300)
+        self.setWindowTitle('Заказ в Макдональсе')
+
+        sete = ['Чизбургер', 'Гамбургер', 'Кока-кола', 'Нагетсы']
+        sete2 = [150, 135, 57, 211]
+        self.eat = []
+        self.nom = []
+        for i in range(4):
+            self.ch = QLineEdit('0', self)
+            self.ch.setEnabled(False)
+            self.ch.sl = sete2[i]
+            self.ch.resize(20, 20)
+            self.ch.move(100, 30 * i + 7)
+            self.btn = QCheckBox(self)
+            self.btn.resize(20, 20)
+            self.btn.move(10, 30 * i + 7)
+            self.name = QLabel(sete[i], self)
+            self.name.move(30, i * 30 + 10)
+            self.btn.stateChanged.connect(self.onChanged)
+            self.btn.setProperty('s', self.name)
+            self.btn.setProperty('d', self.ch)
+
+        self.end = QPushButton('Заказать', self)
+        self.end.move(130, 250)
+        self.end.clicked.connect(self.endof)
+
+        self.slot = QPlainTextEdit(self)
+        self.slot.resize(200, 100)
+        self.slot.move(10, 140)
+
+    def onChanged(self):
+        if self.sender().isChecked():
+            k = self.sender().property('d')
+            k.setEnabled(True)
+            k.setText('1')
+            self.eat.append(self.sender().property('s').text())
+            self.nom.append(k)
+        else:
+            s = self.sender().property('s').text()
+            k = self.eat.index(s)
+            del self.eat[k]
+            self.nom[k].setText('0')
+            self.nom[k].setEnabled(False)
+            del self.nom[k]
+
+    def endof(self):
+        self.slot.clear()
+        self.slot.appendPlainText('Ваш заказ:')
+        x = 0
+        for i in range(len(self.eat)):
+            k = int(self.nom[i].text()) * self.nom[i].sl
+            x += k
+            self.slot.appendPlainText(f'{self.eat[i]}-----{self.nom[i].text()}-----{k}')
+        self.slot.appendPlainText(f'Итого сумма: {x}')
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = Example()
+    ex.show()
+    sys.exit(app.exec())

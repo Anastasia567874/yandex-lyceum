@@ -1,0 +1,80 @@
+import sys
+
+from random import randrange
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QPlainTextEdit
+from PyQt5.QtWidgets import QLabel, QLineEdit, QLCDNumber
+
+
+class Example(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setGeometry(300, 300, 300, 300)
+        self.setWindowTitle('Ним наносит ответный удар')
+
+        self.bt1 = QPushButton(self)
+        self.bt1.resize(50, 50)
+        self.bt1.move(50, 30)
+        self.bt1.clicked.connect(self.chislo)
+
+        self.bt2 = QPushButton(self)
+        self.bt2.resize(50, 50)
+        self.bt2.move(150, 30)
+        self.bt2.clicked.connect(self.chislo)
+
+        self.name1 = QLabel('Осталось ходов:', self)
+        self.name1.resize(90, 40)
+        self.name1.move(40, 90)
+
+        self.name2 = QLabel('Текущее число:', self)
+        self.name2.resize(90, 40)
+        self.name2.move(40, 135)
+
+        self.name3 = QLabel(self)
+        self.name3.resize(100, 40)
+        self.name3.move(10, 5)
+
+        self.sad1 = QLCDNumber(self)
+        self.sad1.resize(50, 40)
+        self.sad1.move(150, 90)
+
+        self.sad2 = QLCDNumber(self)
+        self.sad2.resize(50, 40)
+        self.sad2.move(150, 135)
+
+        self.enda = QPushButton('Новая игра', self)
+        self.enda.resize(100, 20)
+        self.enda.move(150, 200)
+        self.enda.clicked.connect(self.new_game)
+        self.new_game()
+
+    def new_game(self):
+        self.y = randrange(1, 20)
+        self.z = randrange(1, 20)
+        self.bt1.setText('+' + str(self.y))
+        self.bt2.setText('-' + str(self.z))
+        self.k = 10
+        self.x = randrange(1, 50)
+        self.name3.setText('')
+        self.sad1.display(self.k)
+        self.sad2.display(self.x)
+
+    def chislo(self):
+        h = int(self.sender().text())
+        self.k -= 1
+        self.x += h
+        self.sad1.display(self.k)
+        self.sad2.display(self.x)
+        if self.x == 0:
+            self.name3.setText('Вы выиграли')
+        if self.k == 0:
+            self.name3.setText('Вы проиграли')
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = Example()
+    ex.show()
+    sys.exit(app.exec())

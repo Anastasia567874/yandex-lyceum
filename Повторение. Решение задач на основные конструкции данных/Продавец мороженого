@@ -1,0 +1,18 @@
+sete = {}
+for i in range(int(input())):
+    x = input().split('\t')
+    sete[x[0]] = int(x[1])
+input()
+x = ''
+qw = []
+while x != '.':
+    if x != '':
+        x = x.split('\t')
+        qw[-1] += int(x[-1]) * sete[x[0]]
+    elif len(qw) == 0 or qw[-1] != 0:
+        qw.append(0)
+    x = input()
+for i in range(len(qw)):
+    if qw[i] != 0:
+        print(f'{i + 1}) {qw[i]}')
+print(f'Итого: {sum(qw)}')

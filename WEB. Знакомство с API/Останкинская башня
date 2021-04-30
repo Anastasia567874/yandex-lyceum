@@ -1,0 +1,32 @@
+import math
+import requests
+
+
+def lonlat_distance(a, b):
+    degree_to_meters_factor = 111 * 1000
+    a_lon, a_lat = a
+    b_lon, b_lat = b
+    radians_lattitude = math.radians((a_lat + b_lat) / 2.)
+    lat_lon_factor = math.cos(radians_lattitude)
+    dx = abs(a_lon - b_lon) * degree_to_meters_factor * lat_lon_factor
+    dy = abs(a_lat - b_lat) * degree_to_meters_factor
+    distance = math.sqrt(dx * dx + dy * dy)
+    return distance
+
+
+coordsx = [37.611751, 55.819640]
+coordsy = input('Введите адрес: ')
+geocoder_request = f"http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode={coordsy}&format=json"
+response = requests.get(geocoder_request)
+if response:
+    json_response = response.json()
+    toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+    toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
+    toponym_coodrinates = toponym["Point"]["pos"]
+    coordsy = [float(i) for i in toponym_coodrinates.split()]
+    h = (lonlat_distance(coordsx, coordsy) / 3600 - (525 ** 0.5)) ** 2
+    print('Нужно поднять приёмную антенну на', h, 'метров')
+else:
+    print("Ошибка выполнения запроса:")
+    print(geocoder_request)
+    print("Http статус:", response.status_code, "(", response.reason, ")")

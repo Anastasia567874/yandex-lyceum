@@ -1,0 +1,10 @@
+import sys
+data = list(map(str.strip, sys.stdin))
+for i in data:
+    while 'AAA' in i:
+        ind = i.find('AAA')
+        i = i[:ind] + 'BB' + i[ind + 3:]
+        if 'BBB' in i:
+            ind = i.find('BBB')
+            i = i[:ind] + 'AA' + i[ind + 3:]
+    print(i)

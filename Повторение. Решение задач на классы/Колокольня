@@ -1,0 +1,25 @@
+class LittleBell:
+    def sound(self):
+        print('ding')
+
+
+class BigBell:
+    def __init__(self):
+        self.k = 0
+
+    def sound(self):
+        print('ding' if self.k % 2 == 0 else 'dong')
+        self.k += 1
+
+
+class BellTower:
+    def __init__(self, *args):
+        self.sete = list(args)
+
+    def append(self, s):
+        self.sete.append(s)
+
+    def sound(self):
+        for i in self.sete:
+            i.sound()
+        print('...')

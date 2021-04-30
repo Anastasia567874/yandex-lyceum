@@ -1,0 +1,16 @@
+import sys
+data = list(map(str.strip, sys.stdin))
+k = 0
+sete = ['далек', 'далеки', 'далека', 'далеков', 'далеку', 'далекам', 'далека', 'далеков', 'далеком',
+        'далеками', 'далеке', 'далеках']
+for i in data:
+    x = ''
+    for j in i.lower():
+        if j.isalpha() or j == ' ' or j == '-':
+            x += j
+    x = x.split()
+    for j in x:
+        if j in sete:
+            k += 1
+            break
+print(k)

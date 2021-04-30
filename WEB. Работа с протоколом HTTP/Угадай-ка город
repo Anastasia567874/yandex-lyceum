@@ -1,0 +1,69 @@
+import requests
+import pygame
+import os
+from random import choice
+
+
+def get_coord_spn(address):
+    geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+    geocoder_params = {
+        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "geocode": address,
+        "format": "json"}
+    response = requests.get(geocoder_api_server, params=geocoder_params)
+    if not response:
+        raise RuntimeError(
+            f"""Ошибка выполнения запроса:
+                    {address}
+                    Http статус: {response.status_code} ({response.reason})""")
+    json_response = response.json()
+    toponym = json_response["response"]["GeoObjectCollection"][
+        "featureMember"][0]["GeoObject"]
+    toponym_spn = toponym["boundedBy"]["Envelope"]
+    lowerCorner = list(map(float, toponym_spn["lowerCorner"].split(" ")))
+    upperCorner = list(map(float, toponym_spn["upperCorner"].split(" ")))
+    x = (upperCorner[0] - lowerCorner[0]) / 2
+    y = (upperCorner[1] - lowerCorner[1]) / 2
+    toponym_longitude = (upperCorner[0] + lowerCorner[0]) / 2
+    toponym_lattitude = (upperCorner[1] + lowerCorner[1]) / 2
+    return (toponym_longitude, toponym_lattitude), (x, y)
+
+
+LIST_OF_CITIES = ['Оренбург', 'Самара', 'Москва', 'Париж', 'Дубай']
+photo = []
+k = 0
+for city in LIST_OF_CITIES:
+    coord, spn = get_coord_spn(city)
+    map_params = {
+        "ll": ",".join([str(x) for x in coord]),
+        "spn": ",".join([str(x / 2) for x in spn]),
+        "l": choice(['map', 'sat'])
+    }
+    map_api_server = "http://static-maps.yandex.ru/1.x/"
+    response = requests.get(map_api_server, params=map_params)
+    if response:
+        photo.append(f"map{k}.png")
+        with open(photo[k], "wb") as file:
+            file.write(response.content)
+        k += 1
+k = 0
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_caption('Слайд-шоу')
+    size = width, height = 450, 450
+    screen = pygame.display.set_mode(size)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                sete = list(pygame.key.get_pressed())
+                if sete[79] or sete[80] or sete[82] or sete[81]:
+                    k = (k + 1) % len(photo)
+        screen.fill((255, 255, 255))
+        screen.blit(pygame.image.load(photo[k]), (0, 0))
+        pygame.display.flip()
+    pygame.quit()
+for i in photo:
+    os.remove(i)

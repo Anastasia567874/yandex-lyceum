@@ -1,0 +1,9 @@
+import csv
+f = open("sailors.csv", encoding='utf8')
+reader = csv.reader(f, delimiter=';', quotechar='"')
+title = next(reader)
+sete = input().split(', ')
+data = [x[1] for x in reader if (x[2] == 'pirate' or x[-1] in sete) and float(x[-2]) >= 40 and float(x[-2]) <= 60]
+data.sort()
+for i in data:
+    print(i)

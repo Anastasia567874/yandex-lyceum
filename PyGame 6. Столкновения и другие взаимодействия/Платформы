@@ -1,0 +1,60 @@
+import pygame
+
+
+class Ball(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(all_sprites)
+        self.image = pygame.Surface((20, 20),
+                                    pygame.SRCALPHA, 32)
+        pygame.draw.rect(self.image, pygame.Color("blue"), (0, 0, 20, 20))
+        self.rect = pygame.Rect(x, y, 20, 20)
+
+    def update(self):
+        if not pygame.sprite.spritecollideany(self, horizontal_borders):
+            self.rect = self.rect.move(0, 1)
+
+
+class Border(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__(all_sprites)
+        self.add(horizontal_borders)
+        self.image = pygame.Surface([50, 10])
+        pygame.draw.rect(self.image, pygame.Color("gray"), (0, 0, 50, 10))
+        self.rect = pygame.Rect(x, y, 50, 10)
+
+
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_caption('Платформы')
+    size = width, height = 500, 500
+    screen = pygame.display.set_mode(size)
+    running = True
+    fps = 50
+    clock = pygame.time.Clock()
+    all_sprites = pygame.sprite.Group()
+    horizontal_borders = pygame.sprite.Group()
+    person = False
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3:
+                    if not person:
+                        person = Ball(event.pos[0], event.pos[1])
+                    person.rect.x = event.pos[0]
+                    person.rect.y = event.pos[1]
+                if event.button == 1:
+                    Border(event.pos[0], event.pos[1])
+            if event.type == pygame.KEYDOWN and person:
+                sete = list(pygame.key.get_pressed())
+                if sete[79]:
+                    person.rect = person.rect.move(10, 0)
+                if sete[80]:
+                    person.rect = person.rect.move(-10, 0)
+        screen.fill((0, 0, 0))
+        all_sprites.draw(screen)
+        all_sprites.update()
+        pygame.display.flip()
+        clock.tick(fps)
+    pygame.quit()

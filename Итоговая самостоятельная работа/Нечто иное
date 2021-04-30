@@ -1,0 +1,20 @@
+import json
+import csv
+
+with open('something_else.json') as file:
+    f = file.read()
+    js = json.loads(f)
+    data = []
+    for i in js:
+        data.append({"name": i['name'],
+                     "looks_like": i['looks_like'][0],
+                     "numbers": len(i['looks_like']),
+                     "to_hunt": i['to_hunt']})
+    data = sorted(data, key=lambda x: x['name'], reverse=True)
+    with open('bestiary.csv', 'w', newline='') as f:
+        writer = csv.DictWriter(
+            f, fieldnames=list(data[0].keys()),
+            delimiter=';', quoting=csv.QUOTE_MINIMAL)
+        writer.writeheader()
+        for d in data:
+            writer.writerow(d)

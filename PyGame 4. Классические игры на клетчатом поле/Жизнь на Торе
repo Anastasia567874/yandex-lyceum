@@ -1,0 +1,102 @@
+import pygame
+from copy import deepcopy
+
+
+class Board:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.board = [[0] * width for _ in range(height)]
+        self.left = 10
+        self.top = 10
+        self.cell_size = 30
+
+    def set_view(self, left, top, cell_size):
+        self.left = left
+        self.top = top
+        self.cell_size = cell_size
+
+    def render(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                sx = self.left + x * self.cell_size
+                sy = self.top + y * self.cell_size
+                if self.board[y][x] == 0:
+                    pygame.draw.rect(screen, pygame.Color("white"), (sx, sy, self.cell_size, self.cell_size), 1)
+                else:
+                    pygame.draw.rect(screen, pygame.Color("white"), (sx, sy, self.cell_size, self.cell_size))
+
+    def get_cell(self, mouse_pos):
+        sx, sy = mouse_pos
+        x = (sx - self.left) // self.cell_size
+        y = (sy - self.top) // self.cell_size
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return (x, y)
+
+    def on_click(self, cell_coords):
+        x, y = cell_coords
+        self.board[y][x] = 1 - self.board[y][x]
+
+    def get_click(self, mouse_pos):
+        cell = self.get_cell(mouse_pos)
+        if cell:
+            self.on_click(cell)
+
+
+class Life(Board):
+    def __init__(self, width=20, height=20):
+        super().__init__(width, height)
+        self.cell_size = 25
+
+    def next_move(self):
+        copy_board = deepcopy(self.board)
+        for i in range(self.width):
+            for j in range(self.height):
+                s = 0
+                sete = [-1, 0, 1]
+                for dx in sete:
+                    for dy in sete:
+                        x = (i + dx) % self.width
+                        y = (j + dy) % self.height
+                        if x != i or y != j:
+                            s += copy_board[y][x]
+                if s < 2 or s > 3:
+                    self.board[j][i] = 0
+                elif s == 3:
+                    self.board[j][i] = 1
+
+
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_caption('Игра «Жизнь»')
+    size = width, height = 600, 600
+    screen = pygame.display.set_mode(size)
+    board = Life()
+    running = True
+    change = False
+    fps = 5
+    clock = pygame.time.Clock()
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    mouse_pos = event.pos
+                    board.get_click(event.pos)
+                if event.button == 3:
+                    change = not change
+                if event.button == 4:
+                    fps += 5
+                if event.button == 5 and fps > 5:
+                    fps -= 5
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    change = not change
+        screen.fill((0, 0, 0))
+        if change:
+            board.next_move()
+        board.render()
+        pygame.display.flip()
+        clock.tick(fps)
+    pygame.quit()

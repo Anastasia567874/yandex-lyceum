@@ -1,0 +1,80 @@
+def prov(x):
+    errors[str(x.__name__)] = errors.get(str(x.__name__), 0) + 1
+
+
+class PasswordError(Exception):
+    pass
+
+
+class LengthError(PasswordError):
+    pass
+
+
+class LetterError(PasswordError):
+    pass
+
+
+class DigitError(PasswordError):
+    pass
+
+
+class SequenceError(PasswordError):
+    pass
+
+
+class WordError(PasswordError):
+    pass
+
+
+def check_password(x):
+    try:
+        pr = True
+        for i in x:
+            if i.isdigit():
+                pr = False
+        if pr:
+            raise DigitError
+    except DigitError:
+        prov(DigitError)
+    try:
+        if len(x) < 9:
+            raise LengthError
+    except LengthError:
+        prov(LengthError)
+    try:
+        pr, tr = True, True
+        for i in x:
+            if i.isalpha() and i.islower():
+                pr = False
+            if i.isalpha() and i.isupper():
+                tr = False
+        if pr or tr:
+            raise LetterError
+    except LetterError:
+        prov(LetterError)
+    try:
+        sete = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm', 'йцукенгшщзхъ', 'фывапролджэё', 'ячсмитьбю']
+        for i in sete:
+            for j in range(len(i) - 2):
+                if i[j:j + 3] in x:
+                    raise SequenceError
+    except SequenceError:
+        prov(SequenceError)
+    try:
+        for i in words:
+            if i in x:
+                raise WordError
+    except WordError:
+        prov(WordError)
+    return 'ok'
+
+
+errors = {}
+f = open('top 10000 passwd.txt')
+password = [i.strip() for i in list(f)]
+f = open('top-9999-words.txt')
+words = [i.strip() for i in list(f)]
+for i in password:
+    check_password(i)
+for i in sorted(errors.keys()):
+    print(f'{i} - {errors[i]}')

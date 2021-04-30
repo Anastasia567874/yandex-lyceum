@@ -1,0 +1,18 @@
+f1 = open(input(), encoding='utf8').readlines()
+f2 = open(input(), encoding='utf8').readlines()
+pr1, pr2 = 0, 0
+for i in f2:
+    x = i.strip().split()
+    a = f1[0].strip().replace('x', x[0])
+    b = f1[0].strip().replace('x', x[1])
+    if eval(a):
+        pr1 += 1
+    if eval(b):
+        pr2 += 1
+f3 = open("result.txt", encoding='utf8', mode='wt')
+if pr1 == pr2:
+    f3.write(f"('{f1[1].split()[0]}', '{f1[1].split()[1]}')")
+elif pr1 > pr2:
+    f3.write(f"('{f1[1].split()[0]}', {pr1})")
+else:
+    f3.write(f"('{f1[1].split()[1]}', {pr2})")

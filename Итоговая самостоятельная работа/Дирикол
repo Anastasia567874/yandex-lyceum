@@ -1,0 +1,14 @@
+import sqlite3
+
+filename = input()
+con = sqlite3.connect(filename)
+cur = con.cursor()
+sete = []
+name = input()
+place = input()
+result = cur.execute(f"""SELECT date FROM discovery
+     WHERE country = '{place}' and
+creature_id = (select id from creatures where type = '{name}') order by date""").fetchall()
+con.close()
+for i in result[::-1]:
+    print(*i)

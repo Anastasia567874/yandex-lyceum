@@ -1,0 +1,10 @@
+class DefaultList(list):
+    def __init__(self, x):
+        super(list, self).__init__()
+        self.x = x
+
+    def __getitem__(self, item):
+        try:
+            return list.__getitem__(self, item)
+        except IndexError:
+            return self.x
